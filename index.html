@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ResumeIQ API — Resume Intelligence for Developers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Fraunces:ital,wght@0,300;0,500;0,700;1,300;1,500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a08;
+    --bg2: #111110;
+    --bg3: #1a1a18;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --green: #4ade80;
+    --green-dim: #1a3d28;
+    --text: #e8e6df;
+    --muted: #6b6960;
+    --muted2: #9b9890;
+    --amber: #f59e0b;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 2rem;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,10,8,0.85);
+    backdrop-filter: blur(12px);
+  }
+
+  .logo {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    text-decoration: none;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); display: inline-block; animation: pulse 2s infinite; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .nav-links { display: flex; align-items: center; gap: 2rem; }
+  .nav-links a { color: var(--muted2); text-decoration: none; font-size: 12px; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--text); }
+
+  .nav-cta {
+    background: var(--green);
+    color: #000;
+    border: none;
+    padding: 8px 18px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    text-decoration: none;
+  }
+  .nav-cta:hover { opacity: 0.85; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 8rem 2rem 4rem;
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 1px solid var(--border2);
+    padding: 5px 14px;
+    font-size: 11px;
+    color: var(--green);
+    margin-bottom: 2rem;
+    width: fit-content;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(36px, 6vw, 68px);
+    font-weight: 700;
+    line-height: 1.05;
+    margin-bottom: 1.5rem;
+    letter-spacing: -1px;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--green);
+  }
+
+  .hero-sub {
+    font-size: 14px;
+    color: var(--muted2);
+    line-height: 1.8;
+    max-width: 520px;
+    margin-bottom: 2.5rem;
+  }
+
+  .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 4rem; }
+
+  .btn-primary {
+    background: var(--green);
+    color: #000;
+    border: none;
+    padding: 12px 28px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted2);
+    border: 1px solid var(--border2);
+    padding: 12px 28px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.3); }
+
+  /* TERMINAL */
+  .terminal {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    max-width: 640px;
+  }
+
+  .terminal-bar {
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .t-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .t-dot.r { background: #ff5f56; }
+  .t-dot.y { background: #ffbd2e; }
+  .t-dot.g { background: #27c93f; }
+
+  .terminal-title { font-size: 11px; color: var(--muted); margin-left: auto; margin-right: auto; }
+
+  .terminal-body { padding: 1.25rem 1.5rem; font-size: 12px; line-height: 2; }
+
+  .t-muted { color: var(--muted); }
+  .t-green { color: var(--green); }
+  .t-amber { color: var(--amber); }
+  .t-white { color: var(--text); }
+  .t-string { color: #f97316; }
+
+  /* STATS */
+  .stats-strip {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    margin: 0;
+  }
+
+  .stat-item {
+    padding: 2rem;
+    border-right: 1px solid var(--border);
+    text-align: center;
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-num { font-family: 'Fraunces', serif; font-size: 36px; font-weight: 700; color: var(--green); display: block; }
+  .stat-label { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  /* SECTIONS */
+  section { max-width: 1000px; margin: 0 auto; padding: 5rem 2rem; }
+
+  .section-tag { font-size: 11px; color: var(--green); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 1rem; }
+  h2 { font-family: 'Fraunces', serif; font-size: clamp(26px, 4vw, 40px); font-weight: 700; line-height: 1.2; margin-bottom: 1rem; }
+  .section-sub { font-size: 13px; color: var(--muted2); max-width: 480px; line-height: 1.8; margin-bottom: 3rem; }
+
+  /* ENDPOINTS */
+  .endpoints { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border); }
+
+  .endpoint {
+    border-bottom: 1px solid var(--border);
+    padding: 1.25rem 1.5rem;
+    display: grid;
+    grid-template-columns: 60px 200px 1fr auto;
+    align-items: center;
+    gap: 1.5rem;
+    transition: background 0.15s;
+    cursor: default;
+  }
+  .endpoint:last-child { border-bottom: none; }
+  .endpoint:hover { background: var(--bg2); }
+
+  .method { font-size: 10px; font-weight: 600; padding: 3px 8px; background: var(--green-dim); color: var(--green); text-align: center; }
+  .ep-path { font-size: 12px; color: var(--text); }
+  .ep-desc { font-size: 12px; color: var(--muted2); }
+  .ep-tag { font-size: 10px; border: 1px solid var(--border2); color: var(--muted); padding: 3px 10px; white-space: nowrap; }
+
+  /* PRICING */
+  .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+
+  .plan {
+    background: var(--bg);
+    padding: 2rem;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .plan:hover { background: var(--bg2); }
+  .plan.featured { background: var(--bg2); }
+
+  .featured-badge {
+    position: absolute; top: -1px; left: 50%; transform: translateX(-50%);
+    background: var(--green); color: #000;
+    font-size: 10px; font-weight: 600;
+    padding: 3px 12px;
+  }
+
+  .plan-name { font-size: 11px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 1rem; }
+  .plan-price { font-family: 'Fraunces', serif; font-size: 48px; font-weight: 700; line-height: 1; margin-bottom: 0.25rem; }
+  .plan-price sup { font-size: 20px; vertical-align: top; margin-top: 8px; font-family: 'IBM Plex Mono', monospace; font-weight: 300; }
+  .plan-period { font-size: 11px; color: var(--muted); margin-bottom: 2rem; }
+
+  .plan-features { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 2rem; }
+  .plan-features li { font-size: 12px; color: var(--muted2); display: flex; gap: 10px; align-items: flex-start; }
+  .plan-features li::before { content: "→"; color: var(--green); flex-shrink: 0; }
+
+  .plan-btn {
+    width: 100%;
+    padding: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    display: block;
+    text-decoration: none;
+  }
+
+  .plan-btn-green { background: var(--green); color: #000; border: none; }
+  .plan-btn-green:hover { opacity: 0.85; }
+  .plan-btn-outline { background: transparent; color: var(--muted2); border: 1px solid var(--border2); }
+  .plan-btn-outline:hover { color: var(--text); border-color: rgba(255,255,255,0.3); }
+
+  /* HOW IT WORKS */
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0; border: 1px solid var(--border); }
+  .step { padding: 2rem; border-right: 1px solid var(--border); }
+  .step:last-child { border-right: none; }
+  .step-num { font-family: 'Fraunces', serif; font-size: 48px; font-weight: 700; color: var(--border2); line-height: 1; margin-bottom: 1rem; }
+  .step-title { font-size: 13px; color: var(--text); margin-bottom: 0.5rem; font-weight: 500; }
+  .step-desc { font-size: 12px; color: var(--muted2); line-height: 1.7; }
+
+  /* FAQ */
+  .faq { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border); }
+  .faq-item { border-bottom: 1px solid var(--border); }
+  .faq-item:last-child { border-bottom: none; }
+  .faq-q {
+    width: 100%; text-align: left;
+    background: none; border: none; color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px; padding: 1.25rem 1.5rem;
+    cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+    transition: background 0.15s;
+  }
+  .faq-q:hover { background: var(--bg2); }
+  .faq-arrow { color: var(--muted); transition: transform 0.2s; font-size: 16px; }
+  .faq-item.open .faq-arrow { transform: rotate(45deg); }
+  .faq-a { display: none; padding: 0 1.5rem 1.25rem; font-size: 12px; color: var(--muted2); line-height: 1.8; }
+  .faq-item.open .faq-a { display: block; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  footer p { font-size: 11px; color: var(--muted); }
+
+  /* ANIMATIONS */
+  .fade-in { opacity: 0; transform: translateY(20px); animation: fadeIn 0.6s forwards; }
+  @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+
+  .fade-in:nth-child(1) { animation-delay: 0.1s; }
+  .fade-in:nth-child(2) { animation-delay: 0.2s; }
+  .fade-in:nth-child(3) { animation-delay: 0.3s; }
+  .fade-in:nth-child(4) { animation-delay: 0.4s; }
+  .fade-in:nth-child(5) { animation-delay: 0.5s; }
+
+  @media (max-width: 600px) {
+    nav { padding: 1rem; }
+    .nav-links { display: none; }
+    .endpoint { grid-template-columns: 60px 1fr; }
+    .ep-tag { display: none; }
+    .ep-desc { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="#"><span class="logo-dot"></span> ResumeIQ</a>
+  <div class="nav-links">
+    <a href="#endpoints">Endpoints</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#faq">FAQ</a>
+    <a href="mailto:hello@resumeiq.dev">Contact</a>
+  </div>
+  <a href="#pricing" class="nav-cta">Get API Key →</a>
+</nav>
+
+<div class="hero">
+  <div class="fade-in">
+    <div class="hero-tag">● API v1.0 — Now live</div>
+  </div>
+  <h1 class="fade-in">Resume intelligence<br>for <em>every</em> developer.</h1>
+  <p class="hero-sub fade-in">Parse resumes, score ATS compatibility, detect skills gaps, and rewrite job applications — all via one clean REST API. Ship smarter HR products in hours, not months.</p>
+  <div class="hero-actions fade-in">
+    <a href="#pricing" class="btn-primary">Start for free →</a>
+    <a href="#endpoints" class="btn-ghost">View endpoints</a>
+  </div>
+
+  <div class="terminal fade-in">
+    <div class="terminal-bar">
+      <div class="t-dot r"></div>
+      <div class="t-dot y"></div>
+      <div class="t-dot g"></div>
+      <span class="terminal-title">quick start</span>
+    </div>
+    <div class="terminal-body">
+      <span class="t-muted"># 1. Install</span><br>
+      <span class="t-white">npm install resumeiq-sdk</span><br><br>
+      <span class="t-muted"># 2. Score a resume against a job</span><br>
+      <span class="t-amber">const</span> <span class="t-white">{ score } =</span> <span class="t-amber">await</span> <span class="t-white">resumeiq.</span><span class="t-green">atsScore</span><span class="t-white">({</span><br>
+      &nbsp;&nbsp;<span class="t-green">resume</span><span class="t-white">: fs.readFileSync(</span><span class="t-string">"resume.pdf"</span><span class="t-white">),</span><br>
+      &nbsp;&nbsp;<span class="t-green">jobDescription</span><span class="t-white">:</span> <span class="t-string">"Senior React Engineer..."</span><br>
+      <span class="t-white">});</span><br><br>
+      <span class="t-muted"># 3. Done.</span><br>
+      <span class="t-white">console.log(score);</span> <span class="t-muted">// { score: 84, grade: "A", missing: [...] }</span>
+    </div>
+  </div>
+</div>
+
+<div class="stats-strip">
+  <div class="stat-item">
+    <span class="stat-num">5</span>
+    <div class="stat-label">API endpoints</div>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">&lt;1s</span>
+    <div class="stat-label">avg response time</div>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">99.9%</span>
+    <div class="stat-label">uptime SLA</div>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">$0</span>
+    <div class="stat-label">to get started</div>
+  </div>
+</div>
+
+<section id="endpoints">
+  <div class="section-tag">// endpoints</div>
+  <h2>Everything you need<br>to build resume tools.</h2>
+  <p class="section-sub">Five focused endpoints. Clean JSON responses. No bloated SDKs required — plain HTTP works fine.</p>
+
+  <div class="endpoints">
+    <div class="endpoint">
+      <div class="method">POST</div>
+      <div class="ep-path">/v1/resume/parse</div>
+      <div class="ep-desc">Extract structured data from any resume. PDF, DOCX, or plain text.</div>
+      <div class="ep-tag">Parser</div>
+    </div>
+    <div class="endpoint">
+      <div class="method">POST</div>
+      <div class="ep-path">/v1/ats-score</div>
+      <div class="ep-desc">Score resume vs job description. Returns grade + missing keywords.</div>
+      <div class="ep-tag">Scoring</div>
+    </div>
+    <div class="endpoint">
+      <div class="method">POST</div>
+      <div class="ep-path">/v1/skills-gap</div>
+      <div class="ep-desc">Identify missing skills with importance weight and learning time estimate.</div>
+      <div class="ep-tag">Analysis</div>
+    </div>
+    <div class="endpoint">
+      <div class="method">POST</div>
+      <div class="ep-path">/v1/resume/rewrite</div>
+      <div class="ep-desc">Rewrite bullets and summary to target a specific role. ATS score improves automatically.</div>
+      <div class="ep-tag">Rewriter</div>
+    </div>
+    <div class="endpoint">
+      <div class="method">POST</div>
+      <div class="ep-path">/v1/job-match</div>
+      <div class="ep-desc">Rank one candidate against multiple jobs. Returns match % and reasoning per role.</div>
+      <div class="ep-tag">Matching</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-tag">// how it works</div>
+  <h2>Up and running<br>in three steps.</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-title">Subscribe & get your key</div>
+      <div class="step-desc">Pick a plan below. Pay via Stripe. Your API key is emailed to you instantly — no waiting, no approvals.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-title">Make your first request</div>
+      <div class="step-desc">Pass your API key in the Authorization header. Send a resume. Get structured JSON back in under a second.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-title">Ship your product</div>
+      <div class="step-desc">Build your job board, ATS, or career tool on top. We handle the AI — you focus on your product.</div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="section-tag">// pricing</div>
+  <h2>Simple pricing.<br>No surprises.</h2>
+  <p class="section-sub">Cancel anytime. All plans include full endpoint access, usage dashboard, and email support.</p>
+
+  <div class="pricing-grid">
+    <div class="plan">
+      <div class="plan-name">Starter</div>
+      <div class="plan-price"><sup>$</sup>19</div>
+      <div class="plan-period">per month</div>
+      <ul class="plan-features">
+        <li>500 API calls / month</li>
+        <li>All 5 endpoints</li>
+        <li>JSON responses</li>
+        <li>Email support</li>
+        <li>Usage dashboard</li>
+      </ul>
+      <a href="https://buy.stripe.com/REPLACE_STARTER_LINK" class="plan-btn plan-btn-outline">Get started →</a>
+    </div>
+
+    <div class="plan featured">
+      <div class="featured-badge">MOST POPULAR</div>
+      <div class="plan-name">Pro</div>
+      <div class="plan-price"><sup>$</sup>49</div>
+      <div class="plan-period">per month</div>
+      <ul class="plan-features">
+        <li>5,000 API calls / month</li>
+        <li>All 5 endpoints</li>
+        <li>Webhook support</li>
+        <li>Priority email support</li>
+        <li>Usage analytics</li>
+        <li>Rate limit headers</li>
+      </ul>
+      <a href="https://buy.stripe.com/REPLACE_PRO_LINK" class="plan-btn plan-btn-green">Subscribe — $49/mo →</a>
+    </div>
+
+    <div class="plan">
+      <div class="plan-name">Scale</div>
+      <div class="plan-price"><sup>$</sup>149</div>
+      <div class="plan-period">per month</div>
+      <ul class="plan-features">
+        <li>25,000 API calls / month</li>
+        <li>All 5 endpoints</li>
+        <li>Bulk processing</li>
+        <li>Dedicated Slack support</li>
+        <li>99.9% SLA guarantee</li>
+        <li>Custom rate limits</li>
+      </ul>
+      <a href="mailto:hello@resumeiq.dev" class="plan-btn plan-btn-outline">Contact us →</a>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="section-tag">// faq</div>
+  <h2>Common questions.</h2>
+
+  <div class="faq">
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        How do I get my API key after paying?
+        <span class="faq-arrow">+</span>
+      </button>
+      <div class="faq-a">Your API key is generated automatically the moment Stripe confirms your payment. It gets emailed to you within 60 seconds. No manual steps on our end.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        What file formats does the parser support?
+        <span class="faq-arrow">+</span>
+      </button>
+      <div class="faq-a">PDF, DOCX, and plain text. We recommend sending base64-encoded files or plain text strings. PDF and DOCX parsing handles most formatting automatically.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        How accurate is the ATS scoring?
+        <span class="faq-arrow">+</span>
+      </button>
+      <div class="faq-a">Our scoring model is trained on real ATS behavior patterns and keyword matching logic used by tools like Workday, Greenhouse, and Lever. Typical accuracy is 90%+ compared to manual ATS review.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Can I cancel anytime?
+        <span class="faq-arrow">+</span>
+      </button>
+      <div class="faq-a">Yes. Cancel from the Stripe customer portal anytime. You keep access until the end of your billing period. No questions asked.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Is there a free trial?
+        <span class="faq-arrow">+</span>
+      </button>
+      <div class="faq-a">The Starter plan at $19/mo is designed to be low-risk for testing. We don't offer a free tier to keep the service sustainable, but 500 calls is plenty to fully evaluate the API in your product.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        What happens if I exceed my monthly limit?
+        <span class="faq-arrow">+</span>
+      </button>
+      <div class="faq-a">Requests beyond your plan limit return a 429 status code. You won't be charged extra automatically. Upgrade your plan anytime from the dashboard to increase your limit.</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 ResumeIQ. Built for developers.</p>
+  <p>hello@resumeiq.dev</p>
+</footer>
+
+<script>
+  function toggleFaq(btn) {
+    const item = btn.parentElement;
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+</script>
+</body>
+</html>
